@@ -5,6 +5,7 @@ license('Perl');
 
 version_from('lib/Data/SExpression.pm');
 
+requires('Class::Accessor' => 0.25);
 requires('Class::Accessor::Fast');
 requires('Parse::Yapp');
 
