@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 =head1 NAME
 
@@ -26,7 +26,7 @@ structures.
         push @sexps, $sexp;
     }
 
-    $ds = Data::SExpression->new(fold_alists => 1);
+    $ds = Data::SExpression->new({fold_alists => 1});
 
     $ds->read("((top . 4) (left . 5)");  # {\*::top => 4, \*::left => 5}
 
@@ -214,16 +214,30 @@ sub _fold_lists {
     my $thing = shift;
 
     if(consp $thing) {
-        # Recursively fold 
+        # Recursively fold the car
         $thing->set_car($self->_fold_lists($thing->car));
-        $thing->set_cdr($self->_fold_lists($thing->cdr));
 
-        if(ref($thing->cdr) eq "ARRAY") {
-            my $array = $thing->cdr;
-            unshift @{$thing->cdr}, $thing->car;
+        # Unroll the cdr-folding, since recursing over really long
+        # lists will net us warnings
+        if(consp $thing->cdr || !defined($thing->cdr)) {
+            my $cdr = $thing->cdr;
+            my $array;
+            while(consp $cdr) {
+                $cdr = $cdr->cdr;
+            }
+            if(defined($cdr)) {
+                # We hit the end of the chain, and found something other
+                # than nil. This is an improper list.
+                return $thing;
+            }
+            
+            $array = [$thing->car];
+            $cdr = $thing->cdr;
+            while(defined $cdr) {
+                push @$array, $self->_fold_lists($cdr->car);
+                $cdr = $cdr->cdr;
+            }
             return $array;
-        } elsif (!defined($thing->cdr)) {
-            return [$thing->car];
         }
     }
 
