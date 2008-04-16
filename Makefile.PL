@@ -6,14 +6,15 @@ license('Perl');
 version_from('lib/Data/SExpression.pm');
 
 requires('Class::Accessor::Fast');
-requires('Parse::Yapp');
 
 build_requires('Test::More');
 build_requires('Test::Deep');
 
-requires_external_bin('yapp');
+postamble(<<"END_MAKEFILE");
+lib/Data/SExpression/Parser.pm: lib/Data/SExpression/Parser.yp
+\t\$(PERL) build/regen_parser.pl
+END_MAKEFILE
 
-system('yapp -m Data::SExpression::Parser -o lib/Data/SExpression/Parser.pm lib/Data/SExpression/Parser.yp')
-  and die("Failed: Unable to create Data::SExpression::Parser (Is Parse::Yapp appropriately installed on your system?)");
+no_index directory => 'build';
 
 WriteAll;
