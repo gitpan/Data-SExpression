@@ -16,6 +16,5 @@ lib/Data/SExpression/Parser.pm: lib/Data/SExpression/Parser.yp
 END_MAKEFILE
 
 no_index directory => 'build';
-no_index package   => 'Parse::Yapp::Driver';
 
 WriteAll;

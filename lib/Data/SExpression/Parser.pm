@@ -549,6 +549,7 @@ sub new {
 			'STRING' => 4,
 			'QUOTE' => 3
 		},
+		DEFAULT => -11,
 		GOTOS => {
 			'expression' => 11,
 			'quoted' => 2,
@@ -571,7 +572,7 @@ sub new {
 		DEFAULT => -5
 	},
 	{#State 10
-		DEFAULT => -11
+		DEFAULT => -12
 	},
 	{#State 11
 		ACTIONS => {
@@ -679,9 +680,15 @@ sub
 { $_[0]->handler->new_cons($_[1], undef) }
 	],
 	[#Rule 11
+		 'list_interior', 0,
+sub
+#line 35 "lib/Data/SExpression/Parser.yp"
+{ undef }
+	],
+	[#Rule 12
 		 'quoted', 2,
 sub
-#line 39 "lib/Data/SExpression/Parser.yp"
+#line 40 "lib/Data/SExpression/Parser.yp"
 { $_[0]->handler->new_cons($_[0]->handler->new_symbol($_[1]),
                                                                     $_[0]->handler->new_cons($_[2], undef))}
 	]
@@ -690,7 +697,7 @@ sub
     bless($self,$class);
 }
 
-#line 43 "lib/Data/SExpression/Parser.yp"
+#line 44 "lib/Data/SExpression/Parser.yp"
 
 
 sub set_input {
